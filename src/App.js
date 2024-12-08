@@ -1,13 +1,16 @@
 import { useEffect, useRef } from "react";
 import Circle from "./Circle";
+import NoFragment from "./NoFragment";
+import UpdateTimer from "./UpdateTimer";
+import BulletFireEx from "./BulletFireEx";
 // import { debounceFunc, throttleFunction } from "./utils/utils";
 
 function App() {
   const circleRef = useRef();
 
   const handleMouseMovement = (e) => {
-    const XPosition = `${e?.clientX - 30}px`;
-    const YPosition = `${e?.clientY - 30}px`;
+    const XPosition = `${e?.clientX}px`;
+    const YPosition = `${e?.clientY}px`;
     if (circleRef.current) {
       setTimeout(() => {
         circleRef.current.style.top = YPosition;
@@ -24,8 +27,11 @@ function App() {
     >
       <div>
         <h1>Hello</h1>
-        <Circle ref={circleRef} />
+        {/* <Circle ref={circleRef} /> */}
       </div>
+      <NoFragment />
+      <UpdateTimer />
+      <BulletFireEx />
     </div>
   );
 }
