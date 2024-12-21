@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const File = ({ explorer }) => {
+const File = ({ explorer, handleInsertNode }) => {
   const [isExpand, setIsExpand] = useState(false);
   const [addDirectory, setAddDirectory] = useState(null);
   const [isAdding, setIsAdding] = useState({
@@ -8,20 +8,27 @@ const File = ({ explorer }) => {
     isFolder: null,
   });
 
-  const handleAddFileOrFolderSubmit = (e) => {
-    explorer?.items?.unshift(addDirectory);
-    setAddDirectory(null);
-    setIsAdding(false);
-  };
+  //   const handleAddFileOrFolderSubmit = (e) => {
+  //     explorer?.items?.unshift(addDirectory);
+  //     setAddDirectory(null);
+  //     setIsAdding(false);
+  //   };
 
-  const addClickHandler = (exp, isFolder) => {
+  const addClickHandler = (isFolder) => {
     setIsExpand(true);
     setAddDirectory({
-      ...exp,
+      ...explorer,
       isFolder,
-      id: Number(exp?.id + 1),
+      id: Number(explorer?.id + 1),
     });
     setIsAdding({ visible: true, isFolder });
+  };
+
+  const handleInput = (e, isFolder) => {
+    if (e.keyCode === 13 && e.target.value) {
+      handleInsertNode(e.target.value, explorer.id, isFolder);
+      setIsAdding({ visible: false });
+    }
   };
 
   if (explorer?.isFolder) {
@@ -37,12 +44,8 @@ const File = ({ explorer }) => {
             📁{explorer?.name}
           </span>
           <div>
-            <button onClick={() => addClickHandler(explorer, true)}>
-              Folder +
-            </button>
-            <button onClick={() => addClickHandler(explorer, false)}>
-              File +
-            </button>
+            <button onClick={() => addClickHandler(true)}>Folder +</button>
+            <button onClick={() => addClickHandler(false)}>File +</button>
           </div>
         </div>
         <div
@@ -53,20 +56,16 @@ const File = ({ explorer }) => {
               <span>{isAdding?.isFolder ? "📁" : "📄"}</span>
               <input
                 type="text"
-                onChange={(e) => {
-                  setAddDirectory((prev) => ({
-                    ...prev,
-                    name: e.target.value,
-                  }));
-                }}
+                onKeyDown={(e) => handleInput(e, isAdding?.isFolder)}
                 autoFocus
-                onBlur={handleAddFileOrFolderSubmit}
               />
             </>
           ) : null}
           {isExpand &&
             explorer?.items?.map((item) => {
-              return <File explorer={item} />;
+              return (
+                <File explorer={item} handleInsertNode={handleInsertNode} />
+              );
             })}
         </div>
       </div>
