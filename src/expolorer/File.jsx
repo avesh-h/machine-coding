@@ -60,7 +60,6 @@ const File = ({ explorer }) => {
                   }));
                 }}
                 autoFocus
-                onClick={handleAddFileOrFolderSubmit}
                 onBlur={handleAddFileOrFolderSubmit}
               />
             </>
