@@ -3,6 +3,7 @@ import Circle from "./Circle";
 import NoFragment from "./NoFragment";
 import UpdateTimer from "./UpdateTimer";
 import BulletFireEx from "./BulletFireEx";
+import Explorer from "./expolorer/Explorer";
 // import { debounceFunc, throttleFunction } from "./utils/utils";
 
 function App() {
@@ -29,9 +30,10 @@ function App() {
         <h1>Hello</h1>
         {/* <Circle ref={circleRef} /> */}
       </div>
-      <NoFragment />
+      {/* <NoFragment />
       <UpdateTimer />
-      <BulletFireEx />
+      <BulletFireEx /> */}
+      <Explorer />
     </div>
   );
 }
