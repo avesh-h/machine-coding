@@ -1,21 +1,35 @@
 import React, { useState } from "react";
 
-const File = ({ explorer, handleInsertNode, handleDeleteNode }) => {
-  console.log("re-render");
+const File = ({
+  explorer,
+  handleInsertNode,
+  handleDeleteNode,
+  handleUpdateNode,
+}) => {
   const [isExpand, setIsExpand] = useState(false);
   const [isAdding, setIsAdding] = useState({
     visible: false,
     isFolder: null,
+    isEdit: false,
   });
 
   const addClickHandler = (isFolder) => {
     setIsExpand(true);
-    setIsAdding({ visible: true, isFolder });
+    setIsAdding({ visible: true, isFolder, isEdit: false });
   };
 
   const handleInput = (e, isFolder) => {
     if (e.keyCode === 13 && e.target.value) {
-      handleInsertNode(e.target.value, explorer.id, isFolder);
+      if (!isAdding?.isEdit) {
+        handleInsertNode(e.target.value, explorer.id, isFolder);
+      } else {
+        // update call
+        const updatedNodeObj = {
+          ...explorer,
+          name: e.target.value,
+        };
+        handleUpdateNode(updatedNodeObj, explorer.id);
+      }
       setIsAdding({ visible: false });
     }
   };
@@ -24,34 +38,62 @@ const File = ({ explorer, handleInsertNode, handleDeleteNode }) => {
     handleDeleteNode(explorer.id);
   };
 
+  const blurHandler = () => {
+    setIsAdding((prev) => ({ ...prev, visible: false }));
+  };
+
+  console.log("ccccccccccccccc", isAdding.visible);
+
   if (explorer?.isFolder) {
     return (
       <div
         style={{ background: "#ccc", width: "fit-content", margin: "5px 0" }}
       >
         <div style={{ display: "flex", gap: "10px" }}>
-          <span
-            onClick={() => setIsExpand((prev) => !prev)}
-            style={{ cursor: "pointer" }}
-          >
-            📁{explorer?.name}
-          </span>
-          <div>
-            <button onClick={deleteHandler}>Del -</button>
-            <button onClick={() => addClickHandler(true)}>Folder +</button>
-            <button onClick={() => addClickHandler(false)}>File +</button>
-          </div>
-        </div>
-        <div
-          style={{ display: isExpand ? "block" : "none", paddingLeft: "25px" }}
-        >
-          {isAdding.visible ? (
+          {isAdding.visible && isAdding?.isEdit ? (
             <>
               <span>{isAdding?.isFolder ? "📁" : "📄"}</span>
               <input
                 type="text"
                 onKeyDown={(e) => handleInput(e, isAdding?.isFolder)}
                 autoFocus
+                onBlur={blurHandler}
+              />
+            </>
+          ) : (
+            <>
+              <span
+                onClick={() => setIsExpand((prev) => !prev)}
+                style={{ cursor: "pointer" }}
+              >
+                📁{explorer?.name}
+              </span>
+              <div>
+                <button onClick={deleteHandler}>Del -</button>
+                <button
+                  onClick={() =>
+                    setIsAdding({ visible: true, isFolder: true, isEdit: true })
+                  }
+                >
+                  Edit
+                </button>
+                <button onClick={() => addClickHandler(true)}>Folder +</button>
+                <button onClick={() => addClickHandler(false)}>File +</button>
+              </div>
+            </>
+          )}
+        </div>
+        <div
+          style={{ display: isExpand ? "block" : "none", paddingLeft: "25px" }}
+        >
+          {isAdding.visible && !isAdding.isEdit ? (
+            <>
+              <span>{isAdding?.isFolder ? "📁" : "📄"}</span>
+              <input
+                type="text"
+                onKeyDown={(e) => handleInput(e, isAdding?.isFolder)}
+                autoFocus
+                onBlur={blurHandler}
               />
             </>
           ) : null}
@@ -62,6 +104,7 @@ const File = ({ explorer, handleInsertNode, handleDeleteNode }) => {
                   explorer={item}
                   handleInsertNode={handleInsertNode}
                   handleDeleteNode={handleDeleteNode}
+                  handleUpdateNode={handleUpdateNode}
                 />
               );
             })}
@@ -70,12 +113,33 @@ const File = ({ explorer, handleInsertNode, handleDeleteNode }) => {
     );
   } else {
     return (
-      <div>
-        <span>
-          📄{explorer?.name}
-          <button onClick={() => deleteHandler()}>Del -</button>
-        </span>
-      </div>
+      <>
+        {isAdding.visible && isAdding?.isEdit ? (
+          <>
+            <span>{isAdding?.isFolder ? "📁" : "📄"}</span>
+            <input
+              type="text"
+              onKeyDown={(e) => handleInput(e, isAdding?.isFolder)}
+              autoFocus
+              onBlur={blurHandler}
+            />
+          </>
+        ) : (
+          <div>
+            <span>
+              📄{explorer?.name}
+              <button
+                onClick={() =>
+                  setIsAdding({ visible: true, isFolder: false, isEdit: true })
+                }
+              >
+                Edit
+              </button>
+              <button onClick={deleteHandler}>Del -</button>
+            </span>
+          </div>
+        )}
+      </>
     );
   }
 };

@@ -10,7 +10,7 @@ const useTraverseTree = () => {
         ...(isFolder ? { items: [] } : {}),
       };
       tree.items.unshift(latestNode);
-      return tree;
+      return { ...tree, items: [latestNode, ...tree.items] }; // Ensure immutability;
     } else {
       //for childe process
       let latestTree = [];
@@ -19,12 +19,25 @@ const useTraverseTree = () => {
           return insertNode(t, folderId, item, isFolder);
         });
       }
+      // for mutate the state directly so we did return the clone of updated state
       return { ...tree, items: latestTree };
     }
   }
 
   //Update
-  const updateNode = () => {};
+  const updateNode = (tree, itemObj, itemId) => {
+    const itemIdx = tree.items.findIndex((t) => t.id === itemId);
+    if (itemIdx !== -1) {
+      tree.items.splice(itemIdx, 1, itemObj);
+      return { ...tree };
+    } else {
+      let updatedTree = [];
+      updatedTree = tree.items.map((t) => {
+        return updateNode(t, itemObj, itemId);
+      });
+      return { ...tree, items: updatedTree };
+    }
+  };
 
   //Delete node
   const deleteNode = (tree, itemId) => {

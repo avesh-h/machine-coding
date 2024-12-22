@@ -5,7 +5,7 @@ import useTraverseTree from "../hooks/useTraverseTree";
 
 const Explorer = () => {
   const [explorerTree, setExplorerTree] = useState(explorer);
-  const { insertNode, deleteNode } = useTraverseTree();
+  const { insertNode, deleteNode, updateNode } = useTraverseTree();
 
   const handleInsertNode = useCallback(
     (item, folderId, isFolder) => {
@@ -18,10 +18,17 @@ const Explorer = () => {
   const handleDeleteNode = useCallback(
     (itemId) => {
       const updatedTree = deleteNode(explorerTree, itemId);
-      console.log("finallllllllll", updatedTree);
       setExplorerTree(updatedTree);
     },
     [deleteNode, explorerTree]
+  );
+
+  const handleUpdateNode = useCallback(
+    (updatedNodeObj, itemId) => {
+      const updatedTree = updateNode(explorerTree, updatedNodeObj, itemId);
+      setExplorerTree(updatedTree);
+    },
+    [explorerTree, updateNode]
   );
 
   return (
@@ -30,6 +37,7 @@ const Explorer = () => {
         explorer={explorerTree}
         handleInsertNode={handleInsertNode}
         handleDeleteNode={handleDeleteNode}
+        handleUpdateNode={handleUpdateNode}
       />
     </div>
   );
