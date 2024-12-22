@@ -1,26 +1,15 @@
 import React, { useState } from "react";
 
-const File = ({ explorer, handleInsertNode }) => {
+const File = ({ explorer, handleInsertNode, handleDeleteNode }) => {
+  console.log("re-render");
   const [isExpand, setIsExpand] = useState(false);
-  const [addDirectory, setAddDirectory] = useState(null);
   const [isAdding, setIsAdding] = useState({
     visible: false,
     isFolder: null,
   });
 
-  //   const handleAddFileOrFolderSubmit = (e) => {
-  //     explorer?.items?.unshift(addDirectory);
-  //     setAddDirectory(null);
-  //     setIsAdding(false);
-  //   };
-
   const addClickHandler = (isFolder) => {
     setIsExpand(true);
-    setAddDirectory({
-      ...explorer,
-      isFolder,
-      id: Number(explorer?.id + 1),
-    });
     setIsAdding({ visible: true, isFolder });
   };
 
@@ -29,6 +18,10 @@ const File = ({ explorer, handleInsertNode }) => {
       handleInsertNode(e.target.value, explorer.id, isFolder);
       setIsAdding({ visible: false });
     }
+  };
+
+  const deleteHandler = () => {
+    handleDeleteNode(explorer.id);
   };
 
   if (explorer?.isFolder) {
@@ -44,6 +37,7 @@ const File = ({ explorer, handleInsertNode }) => {
             📁{explorer?.name}
           </span>
           <div>
+            <button onClick={deleteHandler}>Del -</button>
             <button onClick={() => addClickHandler(true)}>Folder +</button>
             <button onClick={() => addClickHandler(false)}>File +</button>
           </div>
@@ -64,7 +58,11 @@ const File = ({ explorer, handleInsertNode }) => {
           {isExpand &&
             explorer?.items?.map((item) => {
               return (
-                <File explorer={item} handleInsertNode={handleInsertNode} />
+                <File
+                  explorer={item}
+                  handleInsertNode={handleInsertNode}
+                  handleDeleteNode={handleDeleteNode}
+                />
               );
             })}
         </div>
@@ -73,7 +71,10 @@ const File = ({ explorer, handleInsertNode }) => {
   } else {
     return (
       <div>
-        <span>📄{explorer?.name}</span>
+        <span>
+          📄{explorer?.name}
+          <button onClick={() => deleteHandler()}>Del -</button>
+        </span>
       </div>
     );
   }

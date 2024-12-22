@@ -1,6 +1,8 @@
 const useTraverseTree = () => {
+  //Adding
   function insertNode(tree, folderId, item, isFolder) {
     if (tree.id === folderId && tree.isFolder) {
+      // For parent process
       const latestNode = {
         id: new Date().getTime(),
         name: item,
@@ -10,6 +12,7 @@ const useTraverseTree = () => {
       tree.items.unshift(latestNode);
       return tree;
     } else {
+      //for childe process
       let latestTree = [];
       if (tree?.items) {
         latestTree = tree.items.map((t) => {
@@ -20,9 +23,23 @@ const useTraverseTree = () => {
     }
   }
 
+  //Update
   const updateNode = () => {};
-  const deleteNode = () => {};
-  return { insertNode };
+
+  //Delete node
+  const deleteNode = (tree, itemId) => {
+    if (tree.items.find((t) => t.id === itemId)) {
+      const updatedTreeItems = tree.items.filter((item) => item.id !== itemId);
+      return { ...tree, items: updatedTreeItems };
+    } else {
+      let updatedTree = [];
+      updatedTree = tree.items.map((t) => {
+        return deleteNode(t, itemId);
+      });
+      return { ...tree, items: updatedTree };
+    }
+  };
+  return { insertNode, updateNode, deleteNode };
 };
 
 export default useTraverseTree;
